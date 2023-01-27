@@ -29,20 +29,50 @@ app.get("/api",(req,res)=>{
   utc:new Date().toUTCString()
 })
 })
-app.get("/api/:timestamp",(req,res)=>{
- const timestamp=req.params.timestamp
+// app.get("/api/:timestamp",(req,res)=>{
+//  const timestamp=req.params.timestamp
 
- if(!isNaN(Number(timestamp)) && timestamp.length==13){
-  console.log(timestamp)
-  console.log({unix:timestamp,utc:new Date(Number(timestamp)).toUTCString()})
-return res.json({unix:timestamp,utc:new Date(Number(timestamp)).toUTCString()})
- }
+//  if(!isNaN(Number(timestamp)) && timestamp.length==13){
+//   console.log(timestamp)
+//   console.log({unix:timestamp,utc:new Date(Number(timestamp)).toUTCString()})
+// return res.json({unix:timestamp,utc:new Date(Number(timestamp)).toUTCString()})
+//  }
    
- if(new Date(timestamp).toUTCString() !=='Invalid Date'){
-return res.json({unix:new Date(timestamp).getTime(),utc:new Date(timestamp).toUTCString()})
- }
- res.send({ error : "Invalid Date" })
-})
+//  if(new Date(timestamp).toUTCString() !=='Invalid Date'){
+// return res.json({unix:new Date(timestamp).getTime(),utc:new Date(timestamp).toUTCString()})
+//  }
+//  res.send({ error : "Invalid Date" })
+// })
+
+app.get('/api/:date?', (req, res) => {
+  const dateString = req.params.date
+  const dateStringRegex = /^[0-9]+$/
+  const numbersOnly = dateStringRegex.test(dateString)
+ 
+  if (!numbersOnly) {
+    const unixTimestamp = Date.parse(dateString)
+    const utcDate = new Date(unixTimestamp).toUTCString()
+ 
+    unixTimestamp
+    ? res.json({ unix: unixTimestamp, utc: utcDate })
+    : res.json({ error: "Invalid Date" })
+  } 
+  else {
+    const unixTimestamp = parseInt(dateString)
+    const actualDate = new Date(unixTimestamp)
+    const utcDate = actualDate.toUTCString()
+ 
+    res.json({ unix: unixTimestamp, utc: utcDate })
+  }
+ 
+   app.get('/api', (req, res) => {
+     const currentDate = new Date().toUTCString()
+     const currentUnix = Date.parse(currentDate)
+     res.json({ unix: currentUnix, utc: currentDate })
+   })
+ })
+ 
+
 
 // listen for requests :)
 var listener = app.listen(3000, function () {
